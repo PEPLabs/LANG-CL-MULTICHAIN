@@ -9,8 +9,11 @@ import os
 # Set Up API access via environment variables:
 api_key = os.environ['OPENAI_API_KEY']
 base_url = os.environ['OPENAI_API_BASE']
-deployment = os.environ['DEPLOYMENT_NAME']
 version = os.environ['OPENAI_API_VERSION']
+
+model = AzureChatOpenAI(
+    model_name="gpt-35-turbo"
+)
 
 # TODO: Complete this prompt so that it asks the model for
 # a list of actors that appear in {movie}
@@ -74,4 +77,3 @@ def final_chain_invoke(movie):
         return response
     except Exception as e:
         return "Something went wrong: {}".format(e)
-    
