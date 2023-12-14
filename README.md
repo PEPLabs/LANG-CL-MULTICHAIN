@@ -23,8 +23,8 @@ chain.invoke({"topic": "ice cream"})
 - Take a look at the official [Python Langchain Docs](https://python.langchain.com/docs/expression_language/get_started)
 
 ## Shouldn't Modify (But Look at for Context)
-- [main/app.py](main/app.py) (Can also run this for manual testing)
-- [test/test.py](test/test.py)
+- [src/main/app.py](src/main/app.py) (Can also run this for manual testing)
+- [src/test/test.py](src/test/test.py)
 
 ## Should Modify
-- [lab/lab.py](lab/lab.py) - look out for TODO statements
+- [src/main/lab.py](src/main/lab.py) - look out for TODO statements
