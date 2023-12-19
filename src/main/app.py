@@ -1,4 +1,4 @@
-from main.lab import final_chain_invoke
+from src.main.lab import final_chain_invoke
 
 def main():
     # Expected Behavior: Entering a movie title should result in
