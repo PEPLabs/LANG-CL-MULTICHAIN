@@ -6,19 +6,39 @@ from langchain.schema.runnable import RunnablePassthrough
 
 import os
 
-# Set Up API access via environment variables:
-api_key = os.environ['OPENAI_API_KEY']
-base_url = os.environ['OPENAI_API_BASE']
-version = os.environ['OPENAI_API_VERSION']
+# TODO: Complete this prompt to ask the model for general information on a {topic}:
+prompt_template = "Tell me everything you know about {topic} in under 100 words."
+prompt = ChatPromptTemplate.from_template(prompt_template)
 
-model = AzureChatOpenAI(
-    model_name="gpt-35-turbo"
-)
+# Create a model:
+model = AzureChatOpenAI(openai_api_version="2023-05-15")
+
+# Use a simple output parser that converts output to a string
+output_parser = StrOutputParser()
+
+# TODO: Create/return a chain using the prompt, model, and output_parser
+# Make sure you use LCEL to achieve this. 
+# Hint: The function body can be as short as a single line
+def get_basic_chain():
+    chain = prompt | model | output_parser
+    return chain
+
+# Using the chain created in basic_chain, invoke the chain with a topic.
+# PLEASE DO NOT edit this function
+def basic_chain_invoke(topic):
+    chain = get_basic_chain()
+    try:
+        response = chain.invoke({"topic": topic})
+    except Exception as e:
+        return "Something went wrong: {}".format(e)
+    return response
 
 # TODO: Complete this prompt so that it asks the model for
 # a list of actors that appear in {movie}
 movie_prompt = """
-    {movie}
+    Give me a list of actors from the movie: {movie}.
+    The list should not contain the characters names. It should
+    just include the actor's full name.
 """
 
 # Because we are prompting for a list of actors, use the
@@ -29,16 +49,20 @@ actors_output_parser = CommaSeparatedListOutputParser()
 # return a chain that takes in a movie and returns a list of
 # actors who appeared in that movie. 
 # Again, make sure to use LCEL to construct the chain
-# Ensure that the output key is "actors"
 def get_movie_to_actors_chain():
-    chain = None
+    chain = (
+        ChatPromptTemplate.from_template(movie_prompt)
+        | AzureChatOpenAI(openai_api_version="2023-05-15")
+        | actors_output_parser
+        | {"actors": RunnablePassthrough()}
+    )
     return chain
 
 
 # TODO Fill out the prompt so that it asks the model for movies which share at
 # least 3 {actors} as the original movie, excluding the original movie.
 actor_prompt = """
-    "{actors}"
+    "Generate a list of movies which have at least 3 of these {actors} actors in it, excluding the original movie"
 """
 
 # TODO: Implement the following function. The function should return a chain
@@ -46,14 +70,17 @@ actor_prompt = """
 # containing movies that share at least 3 common actors (not including the 
 # original movie)
 # Again, make sure to use LCEL to construct the chain
-# To help get you started, some initial code is provided:
 def get_actors_to_movies_chain():
     chain = (
-        ChatPromptTemplate.from_messages(
-            [
-                ("human","Which actors are in the following movie."),
-            ]
-        )
+    ChatPromptTemplate.from_messages(
+        [
+            ("human","Which actors are in the following movie."),
+            ("ai","{actors}"),
+            ("system", actor_prompt)
+        ]
+    )
+    | AzureChatOpenAI(openai_api_version="2023-05-15")
+    | StrOutputParser()
     )
     return chain
 
@@ -63,7 +90,10 @@ def get_actors_to_movies_chain():
 # actors
 # Again, make sure to use LCEL to construct the chain
 def get_final_chain():
-    chain = None
+    chain = (
+        get_movie_to_actors_chain()
+        | get_actors_to_movies_chain()
+    )
 
     return chain
 
@@ -77,3 +107,4 @@ def final_chain_invoke(movie):
         return response
     except Exception as e:
         return "Something went wrong: {}".format(e)
+    
