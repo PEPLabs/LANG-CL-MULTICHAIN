@@ -49,7 +49,7 @@ class TestLLMResponse(unittest.TestCase):
         self.assertTrue(classify_relevancy(result, "What movies share common actors with Wizard of Oz?"))
 
 def classify_relevancy(message, question):
-    llm = AzureChatOpenAI(model_name="gpt-35-turbo")
+    llm = AzureChatOpenAI(model_name="gpt-35-turbo", temperature=0)
     result = llm.invoke(f"Answer the following quest with a 'Yes' or 'No' response. Does the"
                         f"message below successfully answer the following question?"
                         f"message: {message}"
