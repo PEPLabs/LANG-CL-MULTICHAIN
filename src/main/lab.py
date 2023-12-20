@@ -4,35 +4,6 @@ from langchain.schema.output_parser import StrOutputParser
 from langchain.output_parsers import CommaSeparatedListOutputParser
 from langchain.schema.runnable import RunnablePassthrough
 
-import os
-
-# TODO: Complete this prompt to ask the model for general information on a {topic}:
-prompt_template = "Tell me everything you know about {topic} in under 100 words."
-prompt = ChatPromptTemplate.from_template(prompt_template)
-
-# Create a model:
-model = AzureChatOpenAI(openai_api_version="2023-05-15")
-
-# Use a simple output parser that converts output to a string
-output_parser = StrOutputParser()
-
-# TODO: Create/return a chain using the prompt, model, and output_parser
-# Make sure you use LCEL to achieve this. 
-# Hint: The function body can be as short as a single line
-def get_basic_chain():
-    chain = prompt | model | output_parser
-    return chain
-
-# Using the chain created in basic_chain, invoke the chain with a topic.
-# PLEASE DO NOT edit this function
-def basic_chain_invoke(topic):
-    chain = get_basic_chain()
-    try:
-        response = chain.invoke({"topic": topic})
-    except Exception as e:
-        return "Something went wrong: {}".format(e)
-    return response
-
 # TODO: Complete this prompt so that it asks the model for
 # a list of actors that appear in {movie}
 movie_prompt = """
