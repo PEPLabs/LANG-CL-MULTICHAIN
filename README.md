@@ -21,10 +21,12 @@ chain.invoke({"topic": "ice cream"})
 
 ## Extra Reading
 - Take a look at the official [Python Langchain Docs](https://python.langchain.com/docs/expression_language/get_started)
+- Documentation on [Multiple Chains](https://python.langchain.com/docs/expression_language/cookbook/multiple_chains)
 
 ## Shouldn't Modify (But Look at for Context)
 - [src/main/app.py](src/main/app.py) (Can also run this for manual testing)
 - [src/test/test_lab.py](src/test/test_lab.py)
+- [src/main/example.py](src/main/example.py) (Can also run to see an example of multi-chaining)
 
 ## Should Modify
 - [src/main/lab.py](src/main/lab.py) - look out for TODO statements
