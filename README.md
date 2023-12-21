@@ -24,7 +24,7 @@ chain.invoke({"topic": "ice cream"})
 
 ## Shouldn't Modify (But Look at for Context)
 - [src/main/app.py](src/main/app.py) (Can also run this for manual testing)
-- [src/test/test.py](src/test/test.py)
+- [src/test/test_lab.py](src/test/test_lab.py)
 
 ## Should Modify
 - [src/main/lab.py](src/main/lab.py) - look out for TODO statements
