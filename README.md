@@ -8,15 +8,6 @@ This lab covers LCEL, or LangChain Expression Language.
     2. The second chain takes a list of actors and returns movies which have at least 3 of these actors in its cast.
 - The final chain combines these 2 chains such that it can take in a movie as input and return a list of movies which share at least 3 common actors.
 - LCEL, or LangChain Expression Language, provides a unified interface for chain creation.
-- Here is a simple example of using LCEL to create a chain (imports omitted for brevity)
-```python
-prompt = ChatPromptTemplate.from_template("tell me a short joke about {topic}")
-model = ChatOpenAI()
-output_parser = StrOutputParser()
-
-chain = prompt | model | output_parser
-
-chain.invoke({"topic": "ice cream"})
 ```
 
 ## Extra Reading
