@@ -1,4 +1,4 @@
-from langchain.chat_models import AzureChatOpenAI
+from langchain.llms import HuggingFaceEndpoint
 from langchain.prompts import ChatPromptTemplate
 from langchain.schema.output_parser import StrOutputParser
 from langchain.output_parsers import CommaSeparatedListOutputParser
@@ -6,13 +6,13 @@ from langchain.schema.runnable import RunnablePassthrough
 
 import os
 
-# Set Up API access via environment variables:
-api_key = os.environ['OPENAI_API_KEY']
-base_url = os.environ['OPENAI_API_BASE']
-version = os.environ['OPENAI_API_VERSION']
-
-model = AzureChatOpenAI(
-    model_name="gpt-35-turbo"
+model = HuggingFaceEndpoint(
+    endpoint_url=os.environ['HF_ENDPOINT'],
+    huggingfacehub_api_token=os.environ['HF_TOKEN'],
+    task="text-generation",
+    model_kwargs={
+        "max_new_tokens": 1024
+    }
 )
 
 # TODO: Complete this prompt so that it asks the model for
