@@ -7,19 +7,30 @@ import os
 import unittest
 
 from langchain.schema.runnable.base import RunnableSequence
-from langchain.chat_models import AzureChatOpenAI
+from langchain.llms import HuggingFaceEndpoint
+from langchain.schema.output_parser import StrOutputParser
 from src.main.lab import get_movie_to_actors_chain, get_actors_to_movies_chain, get_final_chain
+from src.utilities.llm_testing_util import llm_connection_check, llm_wakeup, classify_relevancy
 
 
 class TestLLMResponse(unittest.TestCase):
     """
-    This test will verify that the connection to an external LLM is made. If it does not
-    work, this may be because the API key is invalid, or the service may be down.
-    If that is the case, this lab may not be completable.
+    This function is a sanity check for the Language Learning Model (LLM) connection.
+    It attempts to generate a response from the LLM. If a 'Bad Gateway' error is encountered,
+    it initiates the LLM wake-up process. This function is critical for ensuring the LLM is
+    operational before running tests and should not be modified without understanding the
+    implications.
+    Raises:
+        Exception: If any error other than 'Bad Gateway' is encountered, it is raised to the caller.
     """
-
     def test_llm_sanity_check(self):
-        llm = AzureChatOpenAI( model_name="gpt-35-turbo")
+        try:
+            response = llm_connection_check()
+            self.assertIsInstance(response, LLMResult)
+        except Exception as e:
+            if 'Bad Gateway' in str(e):
+                llm_wakeup()
+                self.fail("LLM is not awake. Please try again in 3-5 minutes.")
 
     """
     The variable returned from the lab function should be an langchain AI response. If this test
@@ -45,19 +56,9 @@ class TestLLMResponse(unittest.TestCase):
         self.assertTrue(classify_relevancy(result, "What actors are in the Wizard of Oz?"))
 
     def test_final_chain_relevancy(self):
-        result = get_final_chain().invoke({"movie": "The Wizard of Oz"})
-        self.assertTrue(classify_relevancy(result, "What movies share common actors with Wizard of Oz?"))
-
-def classify_relevancy(message, question):
-    llm = AzureChatOpenAI(model_name="gpt-35-turbo", temperature=0)
-    result = llm.invoke(f"Answer the following quest with a 'Yes' or 'No' response. Does the"
-                        f"message below successfully answer the following question?"
-                        f"message: {message}"
-                        f"question: {question}")
-    if ("yes" in result.content.lower()):
-        return True
-    else:
-        return False
+        result = get_final_chain().invoke({"movie": "The God-Father"})
+        
+        self.assertTrue(classify_relevancy(result, "What movie(s) share at least one common actor with The God-Father?"))
 
 if __name__ == '__main__':
     unittest.main()

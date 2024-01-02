@@ -1,25 +1,25 @@
-from langchain.llms import HuggingFaceEndpoint
 from langchain.prompts import ChatPromptTemplate
-from langchain.schema.output_parser import StrOutputParser
 from langchain.output_parsers import CommaSeparatedListOutputParser
-from langchain.schema.runnable import RunnablePassthrough
+from langchain.llms import HuggingFaceEndpoint
+
 
 import os
 
 model = HuggingFaceEndpoint(
-    endpoint_url=os.environ['HF_ENDPOINT'],
+    endpoint_url=os.environ['LLM_ENDPOINT'],
     huggingfacehub_api_token=os.environ['HF_TOKEN'],
     task="text-generation",
     model_kwargs={
-        "max_new_tokens": 1024
+        "max_new_tokens": 512
     }
 )
+
 
 # TODO: Complete this prompt so that it asks the model for
 # a list of actors that appear in {movie}
 movie_prompt = """
     {movie}
-"""
+    """
 
 # Because we are prompting for a list of actors, use the
 # following output parser:
@@ -29,14 +29,13 @@ actors_output_parser = CommaSeparatedListOutputParser()
 # return a chain that takes in a movie and returns a list of
 # actors who appeared in that movie. 
 # Again, make sure to use LCEL to construct the chain
-# Ensure that the output key is "actors"
 def get_movie_to_actors_chain():
     chain = None
     return chain
 
 
 # TODO Fill out the prompt so that it asks the model for movies which share at
-# least 3 {actors} as the original movie, excluding the original movie.
+# least 1 {actors} as the original movie, excluding the original movie.
 actor_prompt = """
     "{actors}"
 """

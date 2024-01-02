@@ -1,11 +1,17 @@
-from langchain.chat_models import AzureChatOpenAI
 from langchain.prompts import ChatPromptTemplate
 from langchain.schema.output_parser import StrOutputParser
-from langchain.output_parsers import CommaSeparatedListOutputParser
 from langchain.schema.runnable import RunnablePassthrough
+from langchain.llms import HuggingFaceEndpoint
 
-model = AzureChatOpenAI(
-    model_name="gpt-35-turbo"
+import os
+
+model = HuggingFaceEndpoint(
+    endpoint_url=os.environ['LLM_ENDPOINT'],
+    huggingfacehub_api_token=os.environ['HF_TOKEN'],
+    task="text-generation",
+    model_kwargs={
+        "max_new_tokens": 400
+    }
 )
 
 # In this script, we will create a multi-chain using 2 chains:
@@ -13,9 +19,10 @@ model = AzureChatOpenAI(
 # 2. A chain that extract the most difficult word from the essay
 
 essay_prompt = """
-    Generate an essay of 100 words on the following topic:
+    Generate an essay of no more than 100 words on the following topic:
     {topic}
-    The essay should contain vocabulary that a college student can understand.
+    The essay should contain vocabulary that a college student can understand. The essay must
+    not contain more than 100 words.
 """
 
 # In this first chain, we specify the prompt, the output parser, 
@@ -30,7 +37,8 @@ chain1 = (
 
 vocab_prompt = """
     What is the most difficult word in the following essay:
-    {essay}
+    {essay}.
+    Only give the word itself. Do not include a definition or explanation.
 """
 
 # In this second chain, we use the .from_messages() method to emulate
@@ -40,7 +48,7 @@ vocab_prompt = """
 chain2 = (
     ChatPromptTemplate.from_messages(
         [
-            ("human", "Generate an essay of 100 words on the following topic"),
+            ("human", "Generate an essay of no more than 100 words on the following topic"),
             ("ai","{essay}"),
             ("system", vocab_prompt)
         ]
